@@ -1,0 +1,4 @@
+*.js.map
+entities/*.js
+entities/tiles/*.js
+.atomignore

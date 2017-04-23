@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Ludum Dare</title>
+
+    <style>
+
+      *, html, body
+      {
+        margin: 0;
+        padding: 0;
+      }
+
+    </style>
+
+  </head>
+  <body>
+
+    <!-- Loads JavaScript -->
+    <script src="entities/Level.js"></script>
+    <script src="entities/Entity.js"></script>
+    <script src="entities/Tile.js"></script>
+    <script src="entities/TileMap.js"></script>
+
+    <script src="entities/tiles/productionTile.js"></script>
+
+    <script src="entities/tiles/ambient tiles/EmptyTile.js"></script>
+    <script src="entities/tiles/ambient tiles/GrassTile.js"></script>
+
+    <script src="entities/tiles/production tiles/TreeTile.js"></script>
+    <script src="entities/tiles/production tiles/WoodCutterTile.js"></script>
+    <script src="entities/tiles/production tiles/SawMillTile.js"></script>
+
+    <script src="entities/levels/Level1.js"></script>
+    <script src="entities/levels/Level2.js"></script>
+    <script src="entities/levels/Level3.js"></script>
+
+    <script src="libs/pixi.min.js"></script>
+
+    <script>
+
+    // aliases
+    var Container = PIXI.Container,
+    autoDetectRenderer = PIXI.autoDetectRenderer,
+    loader = PIXI.loader,
+    resources = PIXI.loader.resources,
+    Sprite = PIXI.Sprite;
+
+    //Create the renderer
+    let renderer = PIXI.autoDetectRenderer(1400, 875);
+
+    //Add the canvas to the HTML document
+    document.body.appendChild(renderer.view);
+
+    PIXI.loader
+      .add("img/empty.png")
+      .add("img/grass.png")
+      .add("img/trees.png")
+      .add("img/woodcutter/woodcutter_0.png")
+      .add("img/woodcutter/woodcutter_1.png")
+      .add("img/woodcutter/woodcutter_2.png")
+      .add("img/woodcutter/woodcutter_3.png")
+      .add("img/woodcutter/woodcutter_4.png")
+      .add("img/woodcutter/woodcutter_5.png")
+      .add("img/sawmill/sawmill_0.png")
+      .add("img/sawmill/sawmill_1.png")
+      .add("img/sawmill/sawmill_2.png")
+      .add("img/sawmill/sawmill_3.png")
+      .add("img/sawmill/sawmill_4.png")
+      .add("img/sawmill/sawmill_5.png")
+      .load(setup);
+
+    let stage = new PIXI.Container();
+
+    let levels = [Level1, Level2, Level3];
+    let currentLevelIndex = 0;
+    let level = new levels[currentLevelIndex];
+
+    let selectedTileX = 0;
+    let selectedTileY = 0;
+
+    let tileSprites = [];
+    let valueSprites = [];
+
+    let graphics = new PIXI.Graphics();
+    let levelDisplay;
+
+    function setup()
+    {
+      selectedTileX = 0;
+      selectedTileY = 0;
+
+      let levelDisplayText = 'Level ' + (currentLevelIndex + 1) + "\n" + level.description + "\n" + "Next: " + level.availableTileList[0].type;
+      levelDisplay = new PIXI.Text(levelDisplayText);
+      stage.addChild(levelDisplay);
+
+      for(let x=0; x<level.tileMap.width; x++)
+      {
+        tileSprites[x] = [];
+        valueSprites[x] = [];
+
+        for(let y=0; y<level.tileMap.height; y++)
+        {
+          tileSprites[x][y] = new PIXI.Sprite(resources["img/trees.png"].texture);
+
+          let transformX = 396 * x;
+          if(y % 2 === 0) transformX += 65*3;
+          let transformY = (37.5*3) * y;
+
+          tileSprites[x][y].x = transformX;
+          tileSprites[x][y].y = transformY;
+
+          tileSprites[x][y].data = {};
+
+          tileSprites[x][y].data.x = x;
+          tileSprites[x][y].data.y = y;
+
+          // Value Text
+          valueSprites[x][y] = new PIXI.Text('0');
+          valueSprites[x][y].x = transformX + 198;
+          valueSprites[x][y].y = transformY + 112.5;
+        }
+      }
+
+      for(let y=0; y<level.tileMap.height; y++)
+      {
+        for(let x=0; x<level.tileMap.width; x++)
+        {
+          tileSprites[x][y].interactive = true;
+		      tileSprites[x][y].click = function(data)
+          {
+            let mouseX = this.x;
+            let mouseY = this.y;
+
+            // TODO: Maybe mouse control
+          };
+
+          stage.addChild(tileSprites[x][y]);
+          stage.addChild(valueSprites[x][y]);
+        }
+      }
+
+      graphics.beginFill(0xFFFFF55, 0.2);
+
+      graphics.drawPolygon(
+      [
+        0, 112.5,
+        198, 0,
+        396, 112.5,
+        198, 225
+      ]);
+
+      graphics.endFill();
+
+      stage.addChild(graphics);
+
+      requestAnimationFrame(update);
+    }
+
+    function update()
+    {
+      if(level.availableTileList[0])
+      {
+        levelDisplay.text = 'Level ' + (currentLevelIndex + 1) + "\n" + level.description + "\n" + "Next: " + level.availableTileList[0].type;
+      }
+      else
+      {
+        levelDisplay.text = 'Level ' + (currentLevelIndex + 1) + "\n" + level.description;
+      }
+
+      for(let x=0; x<level.tileMap.width; x++)
+      {
+        for(let y=0; y<level.tileMap.height; y++)
+        {
+          if(level.tileMap.tiles[x][y].type === "EmptyTile")
+          {
+            tileSprites[x][y].texture = resources["img/empty.png"].texture;
+          }
+
+          if(level.tileMap.tiles[x][y].type === "GrassTile")
+          {
+            tileSprites[x][y].texture = resources["img/grass.png"].texture;
+          }
+
+          if(level.tileMap.tiles[x][y].type === "TreeTile")
+          {
+            tileSprites[x][y].texture = resources["img/trees.png"].texture;
+          }
+
+          if(level.tileMap.tiles[x][y].type === "WoodCutterTile")
+          {
+            if(level.tileMap.tiles[x][y].value === 0) tileSprites[x][y].texture = resources["img/woodcutter/woodcutter_0.png"].texture;
+            if(level.tileMap.tiles[x][y].value === 1) tileSprites[x][y].texture = resources["img/woodcutter/woodcutter_1.png"].texture;
+            if(level.tileMap.tiles[x][y].value === 2) tileSprites[x][y].texture = resources["img/woodcutter/woodcutter_2.png"].texture;
+            if(level.tileMap.tiles[x][y].value === 3) tileSprites[x][y].texture = resources["img/woodcutter/woodcutter_3.png"].texture;
+            if(level.tileMap.tiles[x][y].value === 4) tileSprites[x][y].texture = resources["img/woodcutter/woodcutter_4.png"].texture;
+            if(level.tileMap.tiles[x][y].value >= 5) tileSprites[x][y].texture = resources["img/woodcutter/woodcutter_5.png"].texture;
+          }
+
+          if(level.tileMap.tiles[x][y].type === "SawMillTile")
+          {
+            if(level.tileMap.tiles[x][y].value === 0) tileSprites[x][y].texture = resources["img/sawmill/sawmill_0.png"].texture;
+            if(level.tileMap.tiles[x][y].value === 1) tileSprites[x][y].texture = resources["img/sawmill/sawmill_1.png"].texture;
+            if(level.tileMap.tiles[x][y].value === 2) tileSprites[x][y].texture = resources["img/sawmill/sawmill_2.png"].texture;
+            if(level.tileMap.tiles[x][y].value === 3) tileSprites[x][y].texture = resources["img/sawmill/sawmill_3.png"].texture;
+            if(level.tileMap.tiles[x][y].value === 4) tileSprites[x][y].texture = resources["img/sawmill/sawmill_4.png"].texture;
+            if(level.tileMap.tiles[x][y].value >= 5) tileSprites[x][y].texture = resources["img/sawmill/sawmill_5.png"].texture;
+          }
+
+          valueSprites[x][y].text = "" + level.tileMap.tiles[x][y].value;
+        }
+      }
+
+      let transformX = 396 * selectedTileX;
+      if(selectedTileY % 2 === 0) transformX += 195;
+      let transformY = 112.5 * selectedTileY;
+
+      graphics.x = transformX;
+      graphics.y = transformY;
+
+      renderer.backgroundColor = 0xFFFFFFF;
+      renderer.render(stage);
+
+      if(level.isFinished())
+      {
+        if(level.isWon())
+        {
+          alert("You won level " + (currentLevelIndex + 1));
+
+          currentLevelIndex++;
+          if(currentLevelIndex >= levels.length)
+          {
+            currentLevelIndex = 0;
+            alert("You won all three levels! =) This Game will start again now.");
+          }
+        }
+        else
+        {
+          alert("You lost, try again");
+        }
+
+        level = new levels[currentLevelIndex];
+        stage = new PIXI.Container();
+        console.log(level);
+        setup();
+      }
+      else
+      {
+        requestAnimationFrame(update);
+      }
+    }
+
+    window.addEventListener('keyup', (data) =>
+    {
+      let keyCode = data.keyCode;
+
+      if(keyCode == 37 /* Pfeil nach links : NW */)
+      {
+        if(selectedTileY % 2 === 0)
+        {
+          selectedTileY--;
+        }
+        else
+        {
+          selectedTileX--;
+          selectedTileY--;
+        }
+      }
+
+      if(keyCode == 38 /* Pfeil nach oben : NO */)
+      {
+        if(selectedTileY % 2 === 0)
+        {
+          selectedTileY--;
+          selectedTileX++;
+        }
+        else
+        {
+          selectedTileY--;
+        }
+      }
+
+      if(keyCode == 39 /* Pfeil nach rechts : SO */)
+      {
+        if(selectedTileY % 2 === 0)
+        {
+          selectedTileX++;
+          selectedTileY++;
+        }
+        else
+        {
+          selectedTileY++;
+        }
+      }
+
+      if(keyCode == 40 /* Pfeil nach unten : SW */)
+      {
+        if(selectedTileY % 2 === 0)
+        {
+          selectedTileY++;
+        }
+        else
+        {
+          selectedTileX--;
+          selectedTileY++;
+        }
+      }
+
+      if(selectedTileX >= level.tileMap.width) selectedTileX = level.tileMap.width - 1;
+      if(selectedTileY >= level.tileMap.height) selectedTileY = level.tileMap.height - 1;
+      if(selectedTileX < 0) selectedTileX = 0;
+      if(selectedTileY < 0) selectedTileY = 0;
+
+      if(keyCode == 32 /* Leertaste */)
+      {
+        level.setTileFromAvailableTileList(selectedTileX, selectedTileY);
+      }
+    })
+
+    </script>
+  </body>
+</html>
