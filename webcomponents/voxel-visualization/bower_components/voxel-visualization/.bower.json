@@ -21,14 +21,14 @@
     "polymer": "^2.0.0"
   },
   "homepage": "https://github.com/florianfe/voxel-visualization",
-  "version": "1.0.1",
-  "_release": "1.0.1",
+  "version": "1.0.3",
+  "_release": "1.0.3",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.1",
-    "commit": "07f11e1313d33cc0a70f39ff0e6138d408b192c7"
+    "tag": "v1.0.3",
+    "commit": "b61149b530c55e667b5cdf4c689c842a302149b2"
   },
   "_source": "https://github.com/florianfe/voxel-visualization.git",
-  "_target": "^1.0.0",
+  "_target": "^1.0.3",
   "_originalSource": "voxel-visualization"
 }
