@@ -3,7 +3,7 @@
   "description": "A visualisation web component for minecraft .schematics",
   "main": "voxel-visualisation.html",
   "dependencies": {
-    "voxel-visualization": "^1.0.3"
+    "voxel-visualization": "^1.0.4"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
