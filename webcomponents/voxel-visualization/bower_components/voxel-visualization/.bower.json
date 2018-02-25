@@ -4,9 +4,9 @@
   "main": "voxel-visualisation.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
-    "three.js": "threejs#*",
     "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^2.1.0",
-    "zlib": "^3.46.1"
+    "zlib": "^3.46.1",
+    "three.js": "0.89.0"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
@@ -21,12 +21,12 @@
     "polymer": "^2.0.0"
   },
   "homepage": "https://github.com/florianfe/voxel-visualization",
-  "version": "1.0.4",
-  "_release": "1.0.4",
+  "version": "1.0.8",
+  "_release": "1.0.8",
   "_resolution": {
     "type": "version",
-    "tag": "v1.0.4",
-    "commit": "a6acca92da68159a94405198d49505730f100130"
+    "tag": "v1.0.8",
+    "commit": "fd86396cada2794a6d7bd9beb132c845e8735b84"
   },
   "_source": "https://github.com/florianfe/voxel-visualization.git",
   "_target": "^1.0.4",
